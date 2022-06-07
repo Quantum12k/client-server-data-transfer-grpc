@@ -15,7 +15,7 @@ type Service struct {
 func (s Service) GetDataStream(request *Request, server DataTransfer_GetDataStreamServer) error {
 	ctx := server.Context()
 
-	ticker := time.NewTicker(time.Duration(request.DataReceptionInterval) * time.Millisecond)
+	ticker := time.NewTicker(time.Duration(request.GetDataReceptionInterval()) * time.Millisecond)
 	defer ticker.Stop()
 
 	val := int64(1)
