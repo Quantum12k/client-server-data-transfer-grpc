@@ -22,6 +22,7 @@ const (
 	DefaultPassword              = "example password"
 )
 
+//структура получаемых данных с сервера
 type data struct {
 	Value     int64
 	Timestamp time.Time
