@@ -30,8 +30,8 @@ func (s Service) GetDataStream(request *Request, server DataTransfer_GetDataStre
 			}
 		case valueGenerationTime := <-ticker.C:
 			if err := server.Send(&Data{
-				Value:         val,
-				Time:          timestamppb.New(valueGenerationTime),
+				Value: val,
+				Time:  timestamppb.New(valueGenerationTime),
 			}); err != nil {
 				return fmt.Errorf("send data to stream, err: %s", err.Error())
 			}

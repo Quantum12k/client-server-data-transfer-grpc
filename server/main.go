@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"net"
 
@@ -18,15 +19,22 @@ func main() {
 	portFlag := flag.String("port", DefaultServerPort, "server port")
 	flag.Parse()
 
-	dataTransferService := data_transfer_service.Service{}
-	grpcServer := grpc.NewServer()
-
-	data_transfer_service.RegisterDataTransferServer(grpcServer, dataTransferService)
-
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", *portFlag))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
+	creds, err := credentials.NewServerTLSFromFile("../certs/localhost.crt", "../certs/localhost.key")
+	if err != nil {
+		log.Fatalf("could not load TLS keys: %s", err)
+	}
+
+	opts := []grpc.ServerOption{grpc.Creds(creds), grpc.StreamInterceptor(streamInterceptor)}
+
+	dataTransferService := data_transfer_service.Service{}
+	grpcServer := grpc.NewServer(opts...)
+
+	data_transfer_service.RegisterDataTransferServer(grpcServer, dataTransferService)
 
 	fmt.Printf("Server started on port: %s\n", *portFlag)
 	if err := grpcServer.Serve(listener); err != nil {

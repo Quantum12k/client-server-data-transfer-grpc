@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"sync"
 	"time"
@@ -29,9 +30,22 @@ func main() {
 	cancelStreamTimeFlag := flag.Int64("cancel_stream_time", DefaultCancelStreamTime, "cancellation time in seconds")
 	intervalFlag := flag.Int64("interval", DefaultDataReceptionInterval, "data reception interval in milliseconds")
 	bufferMaxSizeFlag := flag.Int64("buffer", DefaultBufferMaxSize, "buffer of elements max size")
+	loginFlag := flag.String("login", "example login", "login")
+	passwordFlag := flag.String("password", "example password", "password")
 	flag.Parse()
 
-	conn, err := grpc.Dial(fmt.Sprintf(":%s", *portFlag), grpc.WithInsecure(), grpc.WithBlock())
+	creds, err := credentials.NewClientTLSFromFile("../certs/localhost.crt", "")
+	if err != nil {
+		log.Fatalf("could not load tls cert: %s", err)
+	}
+
+	conn, err := grpc.Dial(
+		fmt.Sprintf(":%s", *portFlag),
+		grpc.WithTransportCredentials(creds),
+		grpc.WithPerRPCCredentials(&Authentication{
+			Login:    *loginFlag,
+			Password: *passwordFlag,
+		}))
 	if err != nil {
 		log.Fatalf("can not connect to server %v", err)
 	}
@@ -81,7 +95,6 @@ func getData(client data_transfer_service.DataTransferClient, timeout, interval,
 				Value:     resp.GetValue(),
 				Timestamp: resp.GetTime().AsTime(),
 			}
-			log.Printf("Value received: %d\n", resp.GetValue())
 		}
 	}
 }
