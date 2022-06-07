@@ -19,6 +19,11 @@ const (
 	DefaultBufferMaxSize         = 4
 )
 
+type data struct {
+	Value     int64
+	Timestamp time.Time
+}
+
 func main() {
 	portFlag := flag.String("port", DefaultServerPort, "server port")
 	cancelStreamTimeFlag := flag.Int64("cancel_stream_time", DefaultCancelStreamTime, "cancellation time in seconds")
@@ -52,18 +57,18 @@ func getData(client data_transfer_service.DataTransferClient, timeout, interval,
 	timeoutTicker := time.NewTicker(time.Duration(timeout) * time.Second)
 	defer timeoutTicker.Stop()
 
-	bufferOfElements := make([]int64, 0, bufferMaxSize)
-	valueQueue := make(chan int64)
+	bufferOfElements := make([]data, 0, bufferMaxSize)
+	dataQueue := make(chan data)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go bufferController(bufferOfElements, valueQueue, &wg)
+	go bufferController(bufferOfElements, dataQueue, &wg)
 
 	for {
 		select {
 		case <-timeoutTicker.C:
 			cancel()
-			close(valueQueue)
+			close(dataQueue)
 			wg.Wait()
 			return
 		default:
@@ -72,13 +77,16 @@ func getData(client data_transfer_service.DataTransferClient, timeout, interval,
 				log.Fatalf("recv from stream error %v", err)
 			}
 
-			valueQueue <- resp.GetValue()
+			dataQueue <- data{
+				Value:     resp.GetValue(),
+				Timestamp: resp.GetTime().AsTime(),
+			}
 			log.Printf("Value received: %d\n", resp.GetValue())
 		}
 	}
 }
 
-func bufferController(buffer []int64, valueQueue chan int64, wg *sync.WaitGroup) {
+func bufferController(buffer []data, valueQueue chan data, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for value := range valueQueue {

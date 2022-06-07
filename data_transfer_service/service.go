@@ -2,6 +2,7 @@ package data_transfer_service
 
 import (
 	"fmt"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"time"
 
@@ -27,9 +28,10 @@ func (s Service) GetDataStream(request *Request, server DataTransfer_GetDataStre
 				log.Println("context canceled")
 				return nil
 			}
-		case <-ticker.C:
+		case valueGenerationTime := <-ticker.C:
 			if err := server.Send(&Data{
-				Value: val,
+				Value:         val,
+				Time:          timestamppb.New(valueGenerationTime),
 			}); err != nil {
 				return fmt.Errorf("send data to stream, err: %s", err.Error())
 			}

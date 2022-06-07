@@ -2,12 +2,15 @@ syntax = "proto3";
 
 option go_package = "./data_transfer_service";
 
+import "google/protobuf/timestamp.proto";
+
 service DataTransfer {
     rpc GetDataStream (Request) returns (stream Data);
 }
 
 message Data {
     int64 value = 1;
+    google.protobuf.Timestamp time = 2;
 }
 
 message Request {
