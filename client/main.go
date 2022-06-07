@@ -18,6 +18,8 @@ const (
 	DefaultCancelStreamTime      = 2
 	DefaultDataReceptionInterval = 100
 	DefaultBufferMaxSize         = 4
+	DefaultLogin                 = "example login"
+	DefaultPassword              = "example password"
 )
 
 type data struct {
@@ -30,8 +32,8 @@ func main() {
 	cancelStreamTimeFlag := flag.Int64("cancel_stream_time", DefaultCancelStreamTime, "cancellation time in seconds")
 	intervalFlag := flag.Int64("interval", DefaultDataReceptionInterval, "data reception interval in milliseconds")
 	bufferMaxSizeFlag := flag.Int64("buffer", DefaultBufferMaxSize, "buffer of elements max size")
-	loginFlag := flag.String("login", "example login", "login")
-	passwordFlag := flag.String("password", "example password", "password")
+	loginFlag := flag.String("login", DefaultLogin, "login")
+	passwordFlag := flag.String("password", DefaultPassword, "password")
 	flag.Parse()
 
 	creds, err := credentials.NewClientTLSFromFile("../certs/localhost.crt", "")
