@@ -24,10 +24,8 @@ func (s Service) GetDataStream(request *Request, server DataTransfer_GetDataStre
 	for {
 		select {
 		case <-ctx.Done():
-			{
-				log.Println("context canceled")
-				return nil
-			}
+			log.Println("context canceled")
+			return nil
 		case valueGenerationTime := <-ticker.C:
 			if err := server.Send(&Data{
 				Value: val,
