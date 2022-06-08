@@ -16,22 +16,13 @@ type Service struct {
 	helloworld.UnimplementedGreeterServer
 }
 
-func (s *Service) PrintMap() {
-	log.Print("map: ")
-	s.ActiveStreams.Range(func(k,v interface{})bool{
-		log.Print(k.(string))
-		return true
-	})
-
-	log.Print("\n")
-}
-
 func (s *Service) Init() {
 	s.ActiveStreams = &sync.Map{}
 }
 
 func (s Service) GetDataStream(request *RequestStream, server DataTransfer_GetDataStreamServer) error {
 	ctx, cancel := context.WithCancel(context.Background())
+	srvCtx := server.Context()
 
 	ticker := time.NewTicker(time.Duration(request.GetDataReceptionInterval()) * time.Millisecond)
 	defer ticker.Stop()
@@ -42,6 +33,10 @@ func (s Service) GetDataStream(request *RequestStream, server DataTransfer_GetDa
 
 	for {
 		select {
+		case <-srvCtx.Done():
+			s.cancelStream(request.RequestID)
+			log.Println("client disconnected")
+			return nil
 		case <-ctx.Done():
 			log.Println("stream canceled by client")
 			return nil
@@ -63,17 +58,20 @@ func (s Service) GetDataStream(request *RequestStream, server DataTransfer_GetDa
 func (s Service) StopStream(ctx context.Context, request *RequestStopStream) (*StopResponse, error) {
 	reqID := request.GetRequestID()
 
-	cancelFunc, ok := s.ActiveStreams.LoadAndDelete(reqID)
-	if ok {
-		cancelFuncCasted, ok := cancelFunc.(context.CancelFunc)
-		if ok {
-			cancelFuncCasted()
-		}
-	}
+	s.cancelStream(reqID)
 
 	return &StopResponse{
 		Msg:           "ok",
 	}, nil
+}
+
+func (s Service) cancelStream(reqID string) {
+	if cancelFunc, ok := s.ActiveStreams.LoadAndDelete(reqID); ok {
+		if cancelFuncCasted, ok := cancelFunc.(context.CancelFunc); ok {
+			log.Println("canceling stream by reqID: ", reqID)
+			cancelFuncCasted()
+		}
+	}
 }
 
 func (s Service) mustEmbedUnimplementedDataTransferServer() {
