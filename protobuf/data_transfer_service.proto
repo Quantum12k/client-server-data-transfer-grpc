@@ -5,7 +5,8 @@ option go_package = "./data_transfer_service";
 import "google/protobuf/timestamp.proto";
 
 service DataTransfer {
-    rpc GetDataStream (Request) returns (stream Data);
+    rpc GetDataStream (RequestStream) returns (stream Data);
+    rpc StopStream (RequestStopStream) returns (StopResponse);
 }
 
 message Data {
@@ -13,6 +14,15 @@ message Data {
     google.protobuf.Timestamp time = 2;
 }
 
-message Request {
-    int64 data_reception_interval = 1; //ms
+message RequestStream {
+    string requestID = 1;
+    int64 data_reception_interval = 2; //ms
+}
+
+message RequestStopStream {
+    string requestID = 1;
+}
+
+message StopResponse {
+    string msg = 1;
 }

@@ -76,16 +76,17 @@ func (x *Data) GetTime() *timestamppb.Timestamp {
 	return nil
 }
 
-type Request struct {
+type RequestStream struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	DataReceptionInterval int64 `protobuf:"varint,1,opt,name=data_reception_interval,json=dataReceptionInterval,proto3" json:"data_reception_interval,omitempty"` //ms
+	RequestID             string `protobuf:"bytes,1,opt,name=requestID,proto3" json:"requestID,omitempty"`
+	DataReceptionInterval int64  `protobuf:"varint,2,opt,name=data_reception_interval,json=dataReceptionInterval,proto3" json:"data_reception_interval,omitempty"` //ms
 }
 
-func (x *Request) Reset() {
-	*x = Request{}
+func (x *RequestStream) Reset() {
+	*x = RequestStream{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_protobuf_data_transfer_service_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -93,13 +94,13 @@ func (x *Request) Reset() {
 	}
 }
 
-func (x *Request) String() string {
+func (x *RequestStream) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Request) ProtoMessage() {}
+func (*RequestStream) ProtoMessage() {}
 
-func (x *Request) ProtoReflect() protoreflect.Message {
+func (x *RequestStream) ProtoReflect() protoreflect.Message {
 	mi := &file_protobuf_data_transfer_service_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -111,16 +112,117 @@ func (x *Request) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Request.ProtoReflect.Descriptor instead.
-func (*Request) Descriptor() ([]byte, []int) {
+// Deprecated: Use RequestStream.ProtoReflect.Descriptor instead.
+func (*RequestStream) Descriptor() ([]byte, []int) {
 	return file_protobuf_data_transfer_service_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *Request) GetDataReceptionInterval() int64 {
+func (x *RequestStream) GetRequestID() string {
+	if x != nil {
+		return x.RequestID
+	}
+	return ""
+}
+
+func (x *RequestStream) GetDataReceptionInterval() int64 {
 	if x != nil {
 		return x.DataReceptionInterval
 	}
 	return 0
+}
+
+type RequestStopStream struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	RequestID string `protobuf:"bytes,1,opt,name=requestID,proto3" json:"requestID,omitempty"`
+}
+
+func (x *RequestStopStream) Reset() {
+	*x = RequestStopStream{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protobuf_data_transfer_service_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RequestStopStream) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestStopStream) ProtoMessage() {}
+
+func (x *RequestStopStream) ProtoReflect() protoreflect.Message {
+	mi := &file_protobuf_data_transfer_service_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestStopStream.ProtoReflect.Descriptor instead.
+func (*RequestStopStream) Descriptor() ([]byte, []int) {
+	return file_protobuf_data_transfer_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *RequestStopStream) GetRequestID() string {
+	if x != nil {
+		return x.RequestID
+	}
+	return ""
+}
+
+type StopResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Msg string `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"`
+}
+
+func (x *StopResponse) Reset() {
+	*x = StopResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protobuf_data_transfer_service_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StopResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StopResponse) ProtoMessage() {}
+
+func (x *StopResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_protobuf_data_transfer_service_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StopResponse.ProtoReflect.Descriptor instead.
+func (*StopResponse) Descriptor() ([]byte, []int) {
+	return file_protobuf_data_transfer_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *StopResponse) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
 }
 
 var File_protobuf_data_transfer_service_proto protoreflect.FileDescriptor
@@ -135,14 +237,25 @@ var file_protobuf_data_transfer_service_proto_rawDesc = []byte{
 	0x76, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x2e, 0x0a, 0x04, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
-	0x04, 0x74, 0x69, 0x6d, 0x65, 0x22, 0x41, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x36, 0x0a, 0x17, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x72, 0x65, 0x63, 0x65, 0x70, 0x74, 0x69,
-	0x6f, 0x6e, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x03, 0x52, 0x15, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65, 0x63, 0x65, 0x70, 0x74, 0x69, 0x6f, 0x6e,
-	0x49, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x32, 0x32, 0x0a, 0x0c, 0x44, 0x61, 0x74, 0x61,
-	0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0d, 0x47, 0x65, 0x74, 0x44,
-	0x61, 0x74, 0x61, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x08, 0x2e, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x05, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x30, 0x01, 0x42, 0x19, 0x5a, 0x17,
+	0x04, 0x74, 0x69, 0x6d, 0x65, 0x22, 0x65, 0x0a, 0x0d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x49, 0x44, 0x12, 0x36, 0x0a, 0x17, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x72, 0x65, 0x63,
+	0x65, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x15, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65, 0x63, 0x65, 0x70,
+	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x22, 0x31, 0x0a, 0x11,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x53, 0x74, 0x6f, 0x70, 0x53, 0x74, 0x72, 0x65, 0x61,
+	0x6d, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x44, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x44, 0x22,
+	0x20, 0x0a, 0x0c, 0x53, 0x74, 0x6f, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x10, 0x0a, 0x03, 0x6d, 0x73, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6d, 0x73,
+	0x67, 0x32, 0x69, 0x0a, 0x0c, 0x44, 0x61, 0x74, 0x61, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65,
+	0x72, 0x12, 0x28, 0x0a, 0x0d, 0x47, 0x65, 0x74, 0x44, 0x61, 0x74, 0x61, 0x53, 0x74, 0x72, 0x65,
+	0x61, 0x6d, 0x12, 0x0e, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x53, 0x74, 0x72, 0x65,
+	0x61, 0x6d, 0x1a, 0x05, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x30, 0x01, 0x12, 0x2f, 0x0a, 0x0a, 0x53,
+	0x74, 0x6f, 0x70, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x12, 0x2e, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x53, 0x74, 0x6f, 0x70, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x1a, 0x0d, 0x2e,
+	0x53, 0x74, 0x6f, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x19, 0x5a, 0x17,
 	0x2e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x5f,
 	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
@@ -159,18 +272,22 @@ func file_protobuf_data_transfer_service_proto_rawDescGZIP() []byte {
 	return file_protobuf_data_transfer_service_proto_rawDescData
 }
 
-var file_protobuf_data_transfer_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_protobuf_data_transfer_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_protobuf_data_transfer_service_proto_goTypes = []interface{}{
 	(*Data)(nil),                  // 0: Data
-	(*Request)(nil),               // 1: Request
-	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
+	(*RequestStream)(nil),         // 1: RequestStream
+	(*RequestStopStream)(nil),     // 2: RequestStopStream
+	(*StopResponse)(nil),          // 3: StopResponse
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
 }
 var file_protobuf_data_transfer_service_proto_depIdxs = []int32{
-	2, // 0: Data.time:type_name -> google.protobuf.Timestamp
-	1, // 1: DataTransfer.GetDataStream:input_type -> Request
-	0, // 2: DataTransfer.GetDataStream:output_type -> Data
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
+	4, // 0: Data.time:type_name -> google.protobuf.Timestamp
+	1, // 1: DataTransfer.GetDataStream:input_type -> RequestStream
+	2, // 2: DataTransfer.StopStream:input_type -> RequestStopStream
+	0, // 3: DataTransfer.GetDataStream:output_type -> Data
+	3, // 4: DataTransfer.StopStream:output_type -> StopResponse
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -195,7 +312,31 @@ func file_protobuf_data_transfer_service_proto_init() {
 			}
 		}
 		file_protobuf_data_transfer_service_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Request); i {
+			switch v := v.(*RequestStream); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protobuf_data_transfer_service_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RequestStopStream); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protobuf_data_transfer_service_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StopResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -213,7 +354,7 @@ func file_protobuf_data_transfer_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_protobuf_data_transfer_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

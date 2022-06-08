@@ -18,7 +18,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DataTransferClient interface {
-	GetDataStream(ctx context.Context, in *Request, opts ...grpc.CallOption) (DataTransfer_GetDataStreamClient, error)
+	GetDataStream(ctx context.Context, in *RequestStream, opts ...grpc.CallOption) (DataTransfer_GetDataStreamClient, error)
+	StopStream(ctx context.Context, in *RequestStopStream, opts ...grpc.CallOption) (*StopResponse, error)
 }
 
 type dataTransferClient struct {
@@ -29,7 +30,7 @@ func NewDataTransferClient(cc grpc.ClientConnInterface) DataTransferClient {
 	return &dataTransferClient{cc}
 }
 
-func (c *dataTransferClient) GetDataStream(ctx context.Context, in *Request, opts ...grpc.CallOption) (DataTransfer_GetDataStreamClient, error) {
+func (c *dataTransferClient) GetDataStream(ctx context.Context, in *RequestStream, opts ...grpc.CallOption) (DataTransfer_GetDataStreamClient, error) {
 	stream, err := c.cc.NewStream(ctx, &DataTransfer_ServiceDesc.Streams[0], "/DataTransfer/GetDataStream", opts...)
 	if err != nil {
 		return nil, err
@@ -61,11 +62,21 @@ func (x *dataTransferGetDataStreamClient) Recv() (*Data, error) {
 	return m, nil
 }
 
+func (c *dataTransferClient) StopStream(ctx context.Context, in *RequestStopStream, opts ...grpc.CallOption) (*StopResponse, error) {
+	out := new(StopResponse)
+	err := c.cc.Invoke(ctx, "/DataTransfer/StopStream", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataTransferServer is the server API for DataTransfer service.
 // All implementations must embed UnimplementedDataTransferServer
 // for forward compatibility
 type DataTransferServer interface {
-	GetDataStream(*Request, DataTransfer_GetDataStreamServer) error
+	GetDataStream(*RequestStream, DataTransfer_GetDataStreamServer) error
+	StopStream(context.Context, *RequestStopStream) (*StopResponse, error)
 	mustEmbedUnimplementedDataTransferServer()
 }
 
@@ -73,8 +84,11 @@ type DataTransferServer interface {
 type UnimplementedDataTransferServer struct {
 }
 
-func (UnimplementedDataTransferServer) GetDataStream(*Request, DataTransfer_GetDataStreamServer) error {
+func (UnimplementedDataTransferServer) GetDataStream(*RequestStream, DataTransfer_GetDataStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetDataStream not implemented")
+}
+func (UnimplementedDataTransferServer) StopStream(context.Context, *RequestStopStream) (*StopResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopStream not implemented")
 }
 func (UnimplementedDataTransferServer) mustEmbedUnimplementedDataTransferServer() {}
 
@@ -90,7 +104,7 @@ func RegisterDataTransferServer(s grpc.ServiceRegistrar, srv DataTransferServer)
 }
 
 func _DataTransfer_GetDataStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(Request)
+	m := new(RequestStream)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -110,13 +124,36 @@ func (x *dataTransferGetDataStreamServer) Send(m *Data) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _DataTransfer_StopStream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RequestStopStream)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataTransferServer).StopStream(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/DataTransfer/StopStream",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataTransferServer).StopStream(ctx, req.(*RequestStopStream))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DataTransfer_ServiceDesc is the grpc.ServiceDesc for DataTransfer service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var DataTransfer_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "DataTransfer",
 	HandlerType: (*DataTransferServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "StopStream",
+			Handler:    _DataTransfer_StopStream_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "GetDataStream",

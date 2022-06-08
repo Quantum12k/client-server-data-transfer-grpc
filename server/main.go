@@ -29,9 +29,11 @@ func main() {
 		log.Fatalf("could not load TLS keys: %s", err)
 	}
 
-	opts := []grpc.ServerOption{grpc.Creds(creds), grpc.StreamInterceptor(streamInterceptor)}
+	opts := []grpc.ServerOption{grpc.Creds(creds), grpc.StreamInterceptor(streamInterceptor), grpc.UnaryInterceptor(unaryInterceptor)}
 
 	dataTransferService := data_transfer_service.Service{}
+	dataTransferService.Init()
+
 	grpcServer := grpc.NewServer(opts...)
 
 	data_transfer_service.RegisterDataTransferServer(grpcServer, dataTransferService)

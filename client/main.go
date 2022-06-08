@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
@@ -60,9 +61,12 @@ func main() {
 }
 
 func getData(client data_transfer_service.DataTransferClient, timeout, interval, bufferMaxSize int64) {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx := context.Background()
 
-	request := &data_transfer_service.Request{
+	reqID := uuid.New().String()
+
+	request := &data_transfer_service.RequestStream{
+		RequestID:             reqID,
 		DataReceptionInterval: interval,
 	}
 
@@ -84,9 +88,17 @@ func getData(client data_transfer_service.DataTransferClient, timeout, interval,
 	for {
 		select {
 		case <-timeoutTicker.C:
-			cancel()
+			resp, err := client.StopStream(ctx, &data_transfer_service.RequestStopStream{RequestID: reqID})
+			if err != nil {
+				log.Fatalf("stop stream request error %v", err)
+			}
+
+			log.Println("Response to cancel request:", resp.Msg)
+
 			close(dataQueue)
+
 			wg.Wait()
+
 			return
 		default:
 			resp, err := stream.Recv()

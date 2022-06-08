@@ -16,6 +16,14 @@ func streamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.Str
 	return handler(srv, stream)
 }
 
+func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	if err := printCredentials(ctx); err != nil {
+		return nil, err
+	}
+
+	return handler(ctx, req)
+}
+
 func printCredentials(ctx context.Context) error {
 	if incMetadata, ok := metadata.FromIncomingContext(ctx); ok {
 		if len(incMetadata["login"]) > 0 && len(incMetadata["password"]) > 0 &&
