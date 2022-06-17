@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"errors"
+	"log"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"log"
 )
 
 func streamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {

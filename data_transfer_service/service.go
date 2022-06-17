@@ -3,12 +3,12 @@ package data_transfer_service
 import (
 	"context"
 	"fmt"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"sync"
 	"time"
 
 	"google.golang.org/grpc/examples/helloworld/helloworld"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Service struct {
