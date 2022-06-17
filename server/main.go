@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"log"
 	"net"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/Quantum12k/client-server-data-transfer-grpc/data_transfer_service"
 )
