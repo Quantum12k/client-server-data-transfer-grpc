@@ -79,12 +79,11 @@ func getData(client data_transfer_service.DataTransferClient, timeout, interval,
 	timeoutTicker := time.NewTicker(time.Duration(timeout) * time.Second)
 	defer timeoutTicker.Stop()
 
-	bufferOfElements := make([]data, 0, bufferMaxSize)
 	dataQueue := make(chan data)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go bufferController(bufferOfElements, dataQueue, &wg)
+	go printData(bufferMaxSize, dataQueue, &wg)
 
 	for {
 		select {
@@ -115,7 +114,9 @@ func getData(client data_transfer_service.DataTransferClient, timeout, interval,
 	}
 }
 
-func bufferController(buffer []data, valueQueue chan data, wg *sync.WaitGroup) {
+func printData(bufferMaxSize int64, valueQueue chan data, wg *sync.WaitGroup) {
+	buffer := make([]data, 0, bufferMaxSize)
+
 	defer wg.Done()
 
 	for value := range valueQueue {

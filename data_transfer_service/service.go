@@ -7,13 +7,12 @@ import (
 	"sync"
 	"time"
 
-	"google.golang.org/grpc/examples/helloworld/helloworld"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Service struct {
 	ActiveStreams *sync.Map
-	helloworld.UnimplementedGreeterServer
+	UnimplementedDataTransferServer
 }
 
 func (s *Service) Init() {
@@ -61,7 +60,7 @@ func (s Service) StopStream(ctx context.Context, request *RequestStopStream) (*S
 	s.cancelStream(reqID)
 
 	return &StopResponse{
-		Msg:           "ok",
+		Msg: "ok",
 	}, nil
 }
 
@@ -72,8 +71,4 @@ func (s Service) cancelStream(reqID string) {
 			cancelFuncCasted()
 		}
 	}
-}
-
-func (s Service) mustEmbedUnimplementedDataTransferServer() {
-	return
 }
